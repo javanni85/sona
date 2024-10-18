@@ -291,6 +291,67 @@
             opacity: 1;
             transform: translateY(0);
         }
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-content {
+            background-color: var(--background-color);
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .form-group input[type="submit"] {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        .form-group input[type="submit"]:hover {
+            background-color: #6d4636;
+        }
     </style>
 </head>
 <body>
@@ -319,6 +380,44 @@
             </div>
         </section>
 
+            <!-- Модальное окно -->
+
+            <div id="contactModal" class="modal">
+                <div class="modal-content">
+                    <span class="modal-close">&times;</span>
+                    <div class="modal-header">Связаться с нами</div>
+                    <form id="contactForm" action="https://formsubmit.co/emil@javadov.ru" method="POST">
+                        <!-- Скрытые поля для настройки FormSubmit -->
+                        <input type="hidden" name="_next" value="https://sona-beauty.github.io/thankyou.html">
+                        <input type="hidden" name="_subject" value="Новая заявка с сайта Sona">
+                        <input type="hidden" name="_cc" value="tatianadm40@rambler.ru">
+                        <input type="hidden" name="_template" value="table">
+                        <input type="hidden" name="_captcha" value="false">
+                        
+                        <div class="form-group">
+                            <label for="name">Ваше имя</label>
+                            <input type="text" id="name" name="name" placeholder="Введите ваше имя (необязательно)">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Ваш номер телефона</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="Например: +79999999999 или 89999999999">
+                        </div>
+                        <div class="form-group">
+                            <label for="timeRange">Удобный для вас интервал звонка</label>
+                            <select id="timeRange" name="timeRange" required>
+                                <option value="">Выберите интервал</option>
+                                <option value="08:00-12:00">08:00 - 12:00</option>
+                                <option value="12:00-16:00">12:00 - 16:00</option>
+                                <option value="16:00-20:00">16:00 - 20:00</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Отправить">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         <section id="about" class="about">
             <div class="container">
                 <h2>О бренде Sona</h2>
@@ -327,7 +426,7 @@
                     <div class="card fade-in">
                         <img src="tatiana.jpg" alt="Мастер Татьяна">
                         <div class="card-content">
-                            <h3>Татьяна - кутюрье и владелица бутика.</h3>
+                            <h3>Татьяна - кутюрье и владелица онлайн бутика.</h3>
                             <p>С более чем 25-летним опытом в искусстве вязания, Татьяна вкладывает частичку себя в каждое изделие.</p>
                         </div>
                     </div>
@@ -456,6 +555,7 @@
         </div>
     </footer>
 
+
     <script>
         // Smooth scrolling for links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -499,6 +599,78 @@
             threshold: 0.1
         });
         fadeInElements.forEach(element => observer.observe(element));
+
+    // Получаем элементы
+        const modal = document.getElementById('contactModal');
+        const btn = document.querySelector('.btn');
+        const span = document.querySelector('.modal-close');
+
+    // Открытие модального окна при нажатии на кнопку
+    const contactModal = document.getElementById('contactModal');
+    const modalClose = document.querySelector('.modal-close');
+    const contactButton = document.querySelector('.btn');
+
+    // Показать модальное окно
+    contactButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        contactModal.style.display = 'block';
+    });
+
+    // Закрыть модальное окно при нажатии на крестик
+    modalClose.addEventListener('click', function() {
+        contactModal.style.display = 'none';
+    });
+
+    // Закрыть модальное окно при нажатии вне области окна
+    window.addEventListener('click', function(event) {
+        if (event.target === contactModal) {
+            contactModal.style.display = 'none';
+        }
+    });
+  // Валидация формы
+    const contactForm = document.getElementById('contactForm');
+    const phoneInput = document.getElementById('phone');
+    const phoneError = document.getElementById('phoneError');
+
+    function validatePhoneNumber(phone) {
+        const cleanedPhone = phone.replace(/\s+/g, '');
+        if (/^\+7\d{10}$/.test(cleanedPhone) || /^8\d{10}$/.test(cleanedPhone)) {
+            return true;
+        }
+        return false;
+    }
+
+    // Обработчик события ввода номера телефона
+    phoneInput.addEventListener('input', function() {
+        if (this.value.length > 0) {
+            if (validatePhoneNumber(this.value)) {
+                phoneError.style.display = 'none';
+                this.setCustomValidity('');
+            } else {
+                phoneError.style.display = 'block';
+                this.setCustomValidity('Неверный формат номера');
+            }
+        } else {
+            phoneError.style.display = 'none';
+        }
+    });
+
+    // Обработчик отправки формы
+    contactForm.addEventListener('submit', function(e) {
+        // Проверяем валидность номера телефона
+        if (!validatePhoneNumber(phoneInput.value)) {
+            e.preventDefault();
+            phoneError.style.display = 'block';
+            return;
+        }
+        
+        // Показываем индикатор загрузки
+        const submitButton = this.querySelector('input[type="submit"]');
+        submitButton.value = 'Отправка...';
+        submitButton.disabled = true;
+
+        // FormSubmit обработает отправку автоматически
+    });
     </script>
 </body>
 </html>
